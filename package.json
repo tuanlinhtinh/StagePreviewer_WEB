@@ -1,0 +1,38 @@
+{
+    "name": "stage-previewer",
+    "version": "4.0.0",
+    "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+    "devDependencies": {
+        "electron": "^23.0.0",
+        "electron-builder": "^23.6.0"
+    },
+  "build": {
+    "appId": "com.example.stagepreviewer",
+    "productName": "Stage Previewer",
+    "asar": false,
+    "win": {
+      "target": "portable",
+      "icon": "es.ico"
+    },
+    "files": [
+      "index.html",
+      "main.js",
+      "three.min.js",
+      "OBJLoader.js",
+      "OrbitControls.js",
+	  "RGBELoader.js",
+      "es.ico",
+      "loading.png",
+      "logo.png"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Created by Lynh, EnterSpace's RnD Project."
+}
