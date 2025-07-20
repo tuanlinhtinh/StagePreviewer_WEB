@@ -25,7 +25,7 @@
       "three.min.js",
       "OBJLoader.js",
       "OrbitControls.js",
-	  "RGBELoader.js",
+	    "RGBELoader.js",
       "es.ico",
       "loading.png",
       "logo.png"

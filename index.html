@@ -2,233 +2,58 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Stage Previewer</title>
-    <style>
-        body {
-            margin: 0;
-            background: #000;
-            color: #fff;
-            font-family: 'Segoe UI', sans-serif;
-            overflow: hidden;
-        }
-        canvas { display: block; }
-
-        #controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(30, 30, 30, 0.5);
-            padding: 10px;
-            border-radius: 5px;
-            width: 150px;
-            z-index: 1000;
-        }
-
-        .button {
-            width: 100%;
-            padding: 6px;
-            margin: 6px 0;
-            background: #2c3e50;
-            border: none;
-            border-radius: 3px;
-            color: #fff;
-            font-size: 12px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .button:hover { background: #3498db; }
-
-        #objectList, #textureList {
-            max-height: 120px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #3498db #2c3e50;
-        }
-
-        #objectList::-webkit-scrollbar, #textureList::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #objectList::-webkit-scrollbar-track, #textureList::-webkit-scrollbar-track {
-            background: #2c3e50;
-            border-radius: 3px;
-        }
-
-        #objectList::-webkit-scrollbar-thumb, #textureList::-webkit-scrollbar-thumb {
-            background: #3498db;
-            border-radius: 3px;
-        }
-
-        .item {
-            display: flex;
-            align-items: center;
-            margin: 4px 0;
-            cursor: pointer;
-        }
-
-        .item img {
-            width: 40px;
-            height: 40px;
-            border-radius: 3px;
-        }
-
-        .item span {
-            margin-left: 5px;
-            font-size: 11px;
-            color: #bdc3c7;
-            max-width: 100px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .item.selected span {
-            color: #e74c3c;
-        }
-
-        .delete-btn {
-            margin-left: 5px;
-            background: #e74c3c;
-            border: none;
-            border-radius: 3px;
-            color: #fff;
-            font-size: 10px;
-            width: 16px;
-            height: 16px;
-            line-height: 16px;
-            cursor: pointer;
-        }
-
-        .delete-btn:hover {
-            background: #c0392b;
-        }
-
-        #status {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            padding: 6px 10px;
-            background: rgba(30, 30, 30, 0.9);
-            border-radius: 3px;
-            font-size: 10px;
-        }
-
-        #credit {
-            position: absolute;
-            bottom: 10px;
-            right: 60px;
-            padding: 6px 10px;
-            background: rgba(30, 30, 30, 0.9);
-            border-radius: 3px;
-            font-size: 10px;
-            color: #bdc3c7;
-        }
-
-        #watermark {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            opacity: 0.7;
-        }
-
-        #loadingScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        }
-
-        #loadingScreen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #loadingScreen img {
-            width: 150px;
-        }
-
-        canvas.dragover {
-            border: 2px dashed #3498db;
-        }
-
-        video.hidden {
-            display: none;
-        }
-
-        #videoControls {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(30, 30, 30, 0.9);
-            padding: 5px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            z-index: 1000;
-            visibility: hidden;
-        }
-
-        #videoControls.visible {
-            visibility: visible;
-        }
-
-        #playPauseVideoBtn {
-            width: 60px;
-            padding: 5px;
-            margin-right: 5px;
-            background: #2c3e50;
-            border: none;
-            border-radius: 3px;
-            color: #fff;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        #playPauseVideoBtn:hover {
-            background: #3498db;
-        }
-
-        #videoScrub {
-            width: 200px;
-            accent-color: #3498db;
-        }
-    </style>
+    <title>Stage Previewer 2.0</title>
+    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
     <div id="loadingScreen">
-        <img src="loading.png" alt="Loading">
+        <img src="./loading.png" alt="Loading">
     </div>
-
     <div id="controls">
+        <p>OBJECTS</p>
         <div id="objectList"></div>
+        <hr>
+        <p>TEXTURES</p>
         <div id="textureList"></div>
+        <hr>
+        <p style="font-size: 14px;">1. Select LED</p>
+        <p style="font-size: 14px;">2. Select Textures</p>
+        <p style="font-size: 14px;">(opt.) Select object, then Change Color</p>
+        <hr>
         <button class="button" onclick="captureViewport()">Capture</button>
+        <button id="colorWheelBtn" class="button">Change Color</button>
+        <input type="color" id="colorPicker" style="display: none;">
     </div>
     <div id="videoControls">
-        <button id="playPauseVideoBtn" onclick="togglePlayPause()">Pause</button>
+        <button id="playPauseBtn" onclick="togglePlayPause()">Pause</button>
         <input type="range" id="videoScrub" min="0" max="100" value="0" oninput="scrubVideo(this.value)">
     </div>
     <div id="status">Ready</div>
-    <div id="credit">Created by Lynh, EnterSpace's RnD Projects</div>
-    <img id="watermark" src="logo.png" alt="Watermark">
-
-    <script src="./three.min.js"></script>
-    <script src="https://unpkg.com/three@0.141.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://unpkg.com/three@0.141.0/examples/js/loaders/OBJLoader.js"></script>
+    <div id="credit">By Lynh / EnterSpace</div>
+    <img id="watermark" src="./logo.png" alt="Watermark">
+    <script src="./js/three.min.js"></script>
+    <script src="./js/OrbitControls.js"></script>
+    <script src="./js/OBJLoader.js"></script>
     <script>
+        if (typeof THREE === 'undefined' || typeof THREE.OBJLoader === 'undefined') {
+            console.error('Three.js or OBJLoader not loaded correctly.');
+            alert('Error: Three.js or OBJLoader failed to load. Check the console.');
+        } else {
+            console.log('Three.js and OBJLoader loaded successfully.');
+        }
+
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x000000);
+
+        // Lấy màu từ CSS variable
+        const style = getComputedStyle(document.documentElement);
+        const defaultColor = style.getPropertyValue('--default-color').trim() || '#ffffff';
+
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
+        directionalLight.position.set(5, 10, 7).normalize();
+        scene.add(directionalLight);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 5, 10);
@@ -245,116 +70,185 @@
 
         let objects = [], objectNames = [], textureCache = {}, videoElements = {}, selectedObjectIndex = -1;
         let selectedVideo = null;
+        const objectList = document.getElementById('objectList');
+        const textureList = document.getElementById('textureList');
+        const status = document.getElementById('status');
+        const captureBtn = document.getElementById('captureBtn');
+        const colorWheelBtn = document.getElementById('colorWheelBtn');
+        const colorPicker = document.getElementById('colorPicker');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const videoScrub = document.getElementById('videoScrub');
+        const videoControls = document.getElementById('videoControls');
 
         function init() {
             const canvas = renderer.domElement;
-            canvas.addEventListener('dragover', e => e.preventDefault() || canvas.classList.add('dragover'));
+            canvas.addEventListener('dragover', e => {
+                e.preventDefault();
+                canvas.classList.add('dragover');
+            });
             canvas.addEventListener('dragleave', () => canvas.classList.remove('dragover'));
-            canvas.addEventListener('drop', e => e.preventDefault() || canvas.classList.remove('dragover') || handleDrop(e));
+            canvas.addEventListener('drop', e => {
+                e.preventDefault();
+                canvas.classList.remove('dragover');
+                handleDrop(e.dataTransfer.files);
+            });
 
             document.getElementById('loadingScreen').classList.add('hidden');
-            setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 300);
-
             animate();
+
+            colorWheelBtn.addEventListener('click', () => {
+                if (selectedObjectIndex !== -1) {
+                    colorPicker.click(); // Mở color picker khi nhấn nút
+                } else {
+                    status.textContent = 'Select an object first';
+                }
+            });
+
+            colorPicker.addEventListener('input', (e) => {
+                if (selectedObjectIndex !== -1) {
+                    const color = e.target.value;
+                    objects[selectedObjectIndex].traverse(child => {
+                        if (child instanceof THREE.Mesh) {
+                            child.material.color.set(color);
+                        }
+                    });
+                    status.textContent = `Color changed to ${color}`;
+                    renderer.render(scene, camera); // Cập nhật realtime
+                }
+            });
         }
 
-        function handleDrop(event) {
-            const files = event.dataTransfer.files;
-            const status = document.getElementById('status');
-
+        function handleDrop(files) {
+            status.textContent = 'Processing files...';
             for (let file of files) {
                 const ext = file.name.split('.').pop().toLowerCase();
                 if (ext === 'obj') loadOBJ(file);
-                else if (['jpg', 'png', 'mp4'].includes(ext)) loadTexture(file);
+                else if (['jpg', 'png', 'jpeg'].includes(ext)) loadTexture(file);
+                else if (ext === 'mp4') loadVideo(file);
                 else status.textContent = `Unsupported file: ${file.name}`;
             }
+            status.textContent = 'Ready';
         }
 
         function loadOBJ(file) {
-            const status = document.getElementById('status');
             status.textContent = `Loading ${file.name}...`;
-
             const reader = new FileReader();
             reader.onload = e => {
-                const object = new THREE.OBJLoader().parse(e.target.result);
-                object.traverse(child => {
-                    if (child instanceof THREE.Mesh) child.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-                });
-
-                scene.add(object);
-                objects.push(object);
-                objectNames.push(file.name);
-                addObjectThumbnail(objects.length - 1, file.name);
-                status.textContent = `Loaded: ${file.name}`;
+                try {
+                    const loader = new THREE.OBJLoader();
+                    const object = loader.parse(e.target.result);
+                    object.traverse(child => {
+                        if (child instanceof THREE.Mesh) {
+                            child.material = file.name.toLowerCase().includes('led') ? new THREE.MeshBasicMaterial({ color: defaultColor }) : new THREE.MeshPhongMaterial({ color: defaultColor, shininess: 50 });
+                        }
+                    });
+                    scene.add(object);
+                    objects.push(object);
+                    objectNames.push(file.name);
+                    addObjectThumbnail(objects.length - 1, file.name);
+                    status.textContent = `Loaded: ${file.name}`;
+                } catch (error) {
+                    status.textContent = `Error loading ${file.name}: ${error.message}`;
+                    console.error('OBJ Load Error:', error);
+                }
             };
             reader.readAsText(file);
+            reader.onerror = () => {
+                status.textContent = `Failed to read ${file.name}`;
+                console.error('FileReader Error for OBJ:', file.name);
+            };
         }
 
         function loadTexture(file) {
-            const status = document.getElementById('status');
             status.textContent = `Loading ${file.name}...`;
-
             const name = file.name;
             const ext = name.split('.').pop().toLowerCase();
-
-            if (ext === 'mp4') {
-                const video = document.createElement('video');
-                video.className = 'hidden';
-                video.autoplay = true;
-                video.loop = true;
-                video.muted = true;
-                document.body.appendChild(video);
-
+            if (['jpg', 'png', 'jpeg'].includes(ext)) {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    video.src = e.target.result;
-                    const texture = new THREE.VideoTexture(video);
-                    texture.minFilter = THREE.LinearFilter;
-                    texture.magFilter = THREE.LinearFilter;
-                    texture.format = THREE.RGBFormat;
-                    textureCache[name] = texture;
-                    videoElements[name] = video;
-                    addTextureThumbnail(name, URL.createObjectURL(file));
-                    status.textContent = `Loaded: ${file.name}`;
-                    if (selectedObjectIndex !== -1) applyTexture(texture, objects[selectedObjectIndex]);
-                    updateVideoControls();
+                    try {
+                        const texture = new THREE.TextureLoader().load(e.target.result);
+                        textureCache[name] = texture;
+                        addTextureThumbnail(name, e.target.result);
+                        if (selectedObjectIndex !== -1) applyTexture(texture, objects[selectedObjectIndex]);
+                        status.textContent = `Loaded: ${file.name}`;
+                    } catch (error) {
+                        status.textContent = `Error loading ${file.name}: ${error.message}`;
+                        console.error('Texture Load Error:', error);
+                    }
                 };
                 reader.readAsDataURL(file);
-            } else {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const texture = new THREE.TextureLoader().load(e.target.result);
-                    textureCache[name] = texture;
-                    addTextureThumbnail(name, e.target.result);
-                    status.textContent = `Loaded: ${file.name}`;
-                    if (selectedObjectIndex !== -1) applyTexture(texture, objects[selectedObjectIndex]);
-                    updateVideoControls();
+                reader.onerror = () => {
+                    status.textContent = `Failed to read ${file.name}`;
+                    console.error('FileReader Error for Texture:', file.name);
                 };
-                reader.readAsDataURL(file);
             }
         }
 
+        function loadVideo(file) {
+            status.textContent = `Loading ${file.name}...`;
+            const video = document.createElement('video');
+            video.className = 'hidden';
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            document.body.appendChild(video);
+
+            const url = URL.createObjectURL(file);
+            video.src = url;
+            const texture = new THREE.VideoTexture(video);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.format = THREE.RGBFormat;
+            textureCache[file.name] = texture;
+            videoElements[file.name] = video;
+            addTextureThumbnail(file.name, url);
+            if (selectedObjectIndex !== -1) applyTexture(texture, objects[selectedObjectIndex]);
+            status.textContent = `Loaded: ${file.name}`;
+            updateVideoControls();
+            video.onloadeddata = () => URL.revokeObjectURL(url);
+        }
+
         function addObjectThumbnail(index, name) {
-            const div = document.createElement('div');
-            div.className = 'item';
-            div.dataset.index = index;
-            div.innerHTML = `<span>${name}</span><button class="delete-btn" onclick="event.stopPropagation(); deleteObject(${index})">X</button>`;
-            div.onclick = () => selectObject(index);
-            document.getElementById('objectList').appendChild(div);
+            const btn = document.createElement('button');
+            btn.className = 'item button';
+            btn.dataset.index = index;
+            btn.textContent = name;
+            btn.onclick = () => selectObject(index);
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = 'X';
+            deleteBtn.onclick = (e) => { e.stopPropagation(); deleteObject(index); };
+            const container = document.createElement('div');
+            container.className = 'object-container';
+            container.appendChild(btn);
+            container.appendChild(deleteBtn);
+            objectList.appendChild(container);
         }
 
         function addTextureThumbnail(name, url) {
-            const div = document.createElement('div');
-            div.className = 'item';
-            div.innerHTML = `<img src="${url}" title="${name}"><span>${name}</span><button class="delete-btn" onclick="event.stopPropagation(); deleteTexture('${name}')">X</button>`;
-            div.onclick = () => applyTextureFromThumbnail(name);
-            document.getElementById('textureList').appendChild(div);
+            const img = document.createElement('img');
+            img.src = url;
+            img.title = name;
+            img.className = 'item';
+            img.style.maxWidth = '40px';
+            img.style.height = '40px';
+            img.onclick = () => applyTextureFromThumbnail(name);
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = 'X';
+            deleteBtn.onclick = (e) => { e.stopPropagation(); deleteTexture(name); };
+            const container = document.createElement('div');
+            container.className = 'texture-container';
+            container.appendChild(img);
+            container.appendChild(deleteBtn);
+            textureList.appendChild(container);
         }
 
         function selectObject(index) {
             selectedObjectIndex = index;
-            document.getElementById('status').textContent = `Selected: ${objectNames[index]}`;
-            const items = document.getElementById('objectList').getElementsByClassName('item');
+            status.textContent = `Selected: ${objectNames[index]}`;
+            const items = objectList.getElementsByClassName('item');
             for (let item of items) item.classList.toggle('selected', parseInt(item.dataset.index) === index);
             updateVideoControls();
         }
@@ -362,9 +256,9 @@
         function applyTextureFromThumbnail(name) {
             if (textureCache[name] && selectedObjectIndex !== -1) {
                 applyTexture(textureCache[name], objects[selectedObjectIndex]);
-                document.getElementById('status').textContent = `Texture applied: ${name}`;
+                status.textContent = `Texture applied: ${name}`;
             } else {
-                document.getElementById('status').textContent = 'Select an object first';
+                status.textContent = 'Select an object first';
             }
             updateVideoControls();
         }
@@ -380,21 +274,17 @@
                 scene.remove(objects[index]);
                 objects.splice(index, 1);
                 objectNames.splice(index, 1);
-
-                const objectList = document.getElementById('objectList');
                 const items = objectList.getElementsByClassName('item');
                 for (let i = 0; i < items.length; i++) {
                     if (parseInt(items[i].dataset.index) === index) {
-                        objectList.removeChild(items[i]);
+                        objectList.removeChild(items[i].parentElement);
                         break;
                     }
                 }
                 for (let i = 0; i < items.length; i++) items[i].dataset.index = i;
-
                 if (selectedObjectIndex === index) selectedObjectIndex = -1;
                 else if (selectedObjectIndex > index) selectedObjectIndex--;
-
-                document.getElementById('status').textContent = 'Model deleted';
+                status.textContent = 'Model deleted';
                 updateVideoControls();
             }
         }
@@ -406,87 +296,66 @@
                     delete videoElements[name];
                 }
                 delete textureCache[name];
-                const textureList = document.getElementById('textureList');
                 const items = textureList.getElementsByClassName('item');
                 for (let i = 0; i < items.length; i++) {
-                    if (items[i].querySelector('span').textContent === name) {
-                        textureList.removeChild(items[i]);
+                    if (items[i].parentElement.querySelector('img').title === name) {
+                        textureList.removeChild(items[i].parentElement);
                         break;
                     }
                 }
-                document.getElementById('status').textContent = 'Texture deleted';
+                status.textContent = 'Texture deleted';
                 updateVideoControls();
             }
         }
 
         function togglePlayPause() {
             if (selectedObjectIndex === -1) {
-                document.getElementById('status').textContent = 'Select an object first';
+                status.textContent = 'Select an object first';
                 return;
             }
-
             let videoTextureFound = false;
             objects[selectedObjectIndex].traverse(child => {
-                if (child.material && child.material.map && child.material.map instanceof THREE.VideoTexture) {
+                if (child.material?.map instanceof THREE.VideoTexture) {
                     const video = child.material.map.image;
-                    if (video.paused) {
-                        video.play();
-                        document.getElementById('playPauseVideoBtn').textContent = 'Pause';
-                    } else {
-                        video.pause();
-                        document.getElementById('playPauseVideoBtn').textContent = 'Play';
-                    }
+                    video.paused ? video.play() : video.pause();
+                    playPauseBtn.textContent = video.paused ? 'Play' : 'Pause';
                     videoTextureFound = true;
                     selectedVideo = video;
                 }
             });
-
-            if (!videoTextureFound) {
-                document.getElementById('status').textContent = 'No video texture on selected object';
-            }
+            if (!videoTextureFound) status.textContent = 'No video texture on selected object';
         }
 
         function scrubVideo(value) {
             if (selectedVideo && !isNaN(selectedVideo.duration)) {
-                const time = (value / 100) * selectedVideo.duration;
-                selectedVideo.currentTime = time;
+                selectedVideo.currentTime = (value / 100) * selectedVideo.duration;
             }
         }
 
         function updateVideoControls() {
-            const videoControls = document.getElementById('videoControls');
-            const playPauseBtn = document.getElementById('playPauseVideoBtn');
-            const scrubBar = document.getElementById('videoScrub');
-
             if (selectedObjectIndex === -1) {
                 videoControls.classList.remove('visible');
                 selectedVideo = null;
                 return;
             }
-
             let videoTextureFound = false;
             objects[selectedObjectIndex].traverse(child => {
-                if (child.material && child.material.map && child.material.map instanceof THREE.VideoTexture) {
+                if (child.material?.map instanceof THREE.VideoTexture) {
                     const video = child.material.map.image;
                     playPauseBtn.textContent = video.paused ? 'Play' : 'Pause';
                     selectedVideo = video;
+                    videoScrub.value = !isNaN(video.duration) ? (video.currentTime / video.duration) * 100 : 0;
                     videoTextureFound = true;
-
-                    // Cập nhật scrub bar dựa trên thời gian video
-                    if (!isNaN(video.duration)) {
-                        scrubBar.value = (video.currentTime / video.duration) * 100;
-                    }
                 }
             });
-
             videoControls.classList.toggle('visible', videoTextureFound);
             if (!videoTextureFound) {
                 selectedVideo = null;
-                scrubBar.value = 0;
+                videoScrub.value = 0;
             }
         }
 
-        function captureViewport() {
+         function captureViewport() {
             renderer.render(scene, camera);
             const dataURL = renderer.domElement.toDataURL('image/png');
             const link = document.createElement('a');
